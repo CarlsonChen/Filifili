@@ -62,6 +62,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       tempPages = tempPages.sublist(0, index);
     }
     var page;
+
     switch (_routeStatus) {
       case RouteStatus.home:
         tempPages.clear();
