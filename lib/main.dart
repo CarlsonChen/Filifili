@@ -8,17 +8,18 @@ import 'package:bilibili/page/detail_page.dart';
 import 'package:bilibili/page/home_page.dart';
 import 'package:bilibili/page/login_page.dart';
 import 'package:bilibili/page/register_page.dart';
-import 'package:bilibili/page/test_input.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
 
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<HiCache>(
@@ -45,7 +46,26 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   final GlobalKey<NavigatorState> navigatorKey;
 
   //为Navigator设置一个key，必要的时候可以通过navigatorKey.currentState来获取到NavigatorState对象
-  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {}
+  BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    //实现路由跳转逻辑
+    CsNavigator.getShareInstance().registerRouteJump(
+        RouteJumpListener(onJumpTo: (RouteStatus routeStatus, {Map? args}) {
+      _routeStatus = routeStatus;
+      if (routeStatus == RouteStatus.detail) {
+        // this.videoModel = args!['videoMo'];
+      }
+      notifyListeners();
+    }));
+    //设置网络错误拦截器
+    // HiNet.getInstance().setErrorInterceptor((error) {
+    //   if (error is NeedLogin) {
+    //     //清空失效的登录令牌
+    //     HiCache.getInstance().remove(LoginDao.BOARDING_PASS);
+    //     //拉起登录
+    //     HiNavigator.getInstance().onJumpTo(RouteStatus.login);
+    //   }
+    // });
+  }
 
   RouteStatus _routeStatus = RouteStatus.home;
   List<MaterialPage> pages = [];
@@ -55,15 +75,18 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   @override
   Widget build(BuildContext context) {
-    int index = getRouteStackIndex(pages, _routeStatus);
-    var tempPages = pages;
+    int index = getRouteStackIndex(pages, routeStatus);
+    List<MaterialPage> tempPages = pages;
     //如果在栈中,则清除这个页面和上面所有页面，重新添加此页面到栈顶
     if (index != -1) {
+      //要打开的页面在栈中已存在，则将该页面和它上面的所有页面进行出栈
+      //tips 具体规则可以根据需要进行调整，这里要求栈中只允许有一个同样的页面的实例,
+      // 这里是把老页面删除，重建新页面，如果要求保留老页面，则index需要-1
       tempPages = tempPages.sublist(0, index);
     }
     var page;
-
-    switch (_routeStatus) {
+    print('eeeewewewewew');
+    switch (routeStatus) {
       case RouteStatus.home:
         tempPages.clear();
         page = warpPage(const HomePage());
@@ -80,6 +103,8 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     }
     tempPages = [...tempPages, page];
     //通知路由栈发生改变
+    CsNavigator.getShareInstance().notify(tempPages, pages);
+
     pages = tempPages;
 
     return WillPopScope(
@@ -102,7 +127,9 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
           if (!route.didPop(result)) {
             return false;
           }
+          var tempPages = [...pages];
           pages.removeLast();
+          CsNavigator.getShareInstance().notify(pages, tempPages);
           return true;
         },
       ),
