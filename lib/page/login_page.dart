@@ -7,7 +7,8 @@ import 'package:bilibili/http/dao/login_dao.dart';
 import 'package:bilibili/http/request/base_request.dart';
 import 'package:bilibili/http/request/regist_request.dart';
 import 'package:bilibili/main.dart';
-import 'package:bilibili/navigator/cs_navigator.dart';
+import 'package:bilibili/navigator/hi_navigator.dart';
+// import 'package:bilibili/navigator/cs_navigator.dart';
 import 'package:bilibili/wiget/appBar.dart';
 import 'package:bilibili/wiget/login_button.dart';
 import 'package:bilibili/wiget/login_effect.dart';
@@ -31,32 +32,12 @@ class _LoginPageState extends State<LoginPage> {
   String? imoocId;
   String? orderId;
 
-  var listener;
-  @override
-  void initState() {
-    super.initState();
-    print('fffff');
-
-    CsNavigator.getShareInstance().addListener(this.listener = (current, pre) {
-      print('gogogog');
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    CsNavigator.getShareInstance().removeListener(listener = (current, pre) {
-      print('runrunrun');
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: mainWhite,
       appBar: appBar('注册', '登录', () {
-        print('前往登录');
-        CsNavigator.getShareInstance().onJumpTo(RouteStatus.registration);
+        HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
       }),
       body: ListView(
         children: [
@@ -157,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
       var result =
           await LoginDao.register(userName!, password!, orderId!, imoocId!);
       showToast(result['msg']);
-      CsNavigator.getShareInstance().onJumpTo(RouteStatus.registration);
+      HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
     } on HiNetError catch (e) {
       showWarningToast(e.toString());
     }

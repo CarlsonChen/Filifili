@@ -2,7 +2,8 @@ import 'package:bilibili/Util/string_util.dart';
 import 'package:bilibili/Util/toast.dart';
 import 'package:bilibili/http/core/hi_error.dart';
 import 'package:bilibili/http/dao/login_dao.dart';
-import 'package:bilibili/navigator/cs_navigator.dart';
+import 'package:bilibili/navigator/hi_navigator.dart';
+// import 'package:bilibili/navigator/cs_navigator.dart';
 import 'package:bilibili/wiget/appbar.dart';
 import 'package:bilibili/wiget/login_button.dart';
 import 'package:bilibili/wiget/login_effect.dart';
@@ -27,8 +28,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: appBar('登录', '注册', () {
-          print('前往登录');
-          CsNavigator.getShareInstance().onJumpTo(RouteStatus.login);
+          HiNavigator.getInstance().onJumpTo(RouteStatus.login);
         }),
         body: ListView(
           children: [
@@ -72,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       var result = await LoginDao.login(_userName!, _password!);
       showToast(result['msg']);
-      CsNavigator.getShareInstance().onJumpTo(RouteStatus.home);
+      HiNavigator.getInstance().onJumpTo(RouteStatus.home);
     } on HiNetError catch (e) {
       showWarningToast(e.message);
     }

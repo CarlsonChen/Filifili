@@ -3,7 +3,9 @@ import 'package:bilibili/Util/toast.dart';
 import 'package:bilibili/db/hi_cache.dart';
 import 'package:bilibili/http/dao/login_dao.dart';
 import 'package:bilibili/model/video_model.dart';
-import 'package:bilibili/navigator/cs_navigator.dart';
+import 'package:bilibili/navigator/bottom_navigator.dart';
+// import 'package:bilibili/navigator/cs_navigator.dart';
+import 'package:bilibili/navigator/hi_navigator.dart';
 import 'package:bilibili/page/detail_page.dart';
 import 'package:bilibili/page/home_page.dart';
 import 'package:bilibili/page/login_page.dart';
@@ -47,15 +49,15 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   //为Navigator设置一个key，必要的时候可以通过navigatorKey.currentState来获取到NavigatorState对象
   BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
-    //实现路由跳转逻辑
-    CsNavigator.getShareInstance().registerRouteJump(
+    HiNavigator.getInstance().registerRouteJump(
         RouteJumpListener(onJumpTo: (RouteStatus routeStatus, {Map? args}) {
       _routeStatus = routeStatus;
-      if (routeStatus == RouteStatus.detail) {
-        // this.videoModel = args!['videoMo'];
-      }
+      // if (routeStatus == RouteStatus.detail) {
+      // this.videoModel = args!['videoMo'];
+      // }
       notifyListeners();
     }));
+
     //设置网络错误拦截器
     // HiNet.getInstance().setErrorInterceptor((error) {
     //   if (error is NeedLogin) {
@@ -75,7 +77,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   @override
   Widget build(BuildContext context) {
-    int index = getRouteStackIndex(pages, routeStatus);
+    int index = getPageIndex(pages, routeStatus);
     List<MaterialPage> tempPages = pages;
     //如果在栈中,则清除这个页面和上面所有页面，重新添加此页面到栈顶
     if (index != -1) {
@@ -85,25 +87,24 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       tempPages = tempPages.sublist(0, index);
     }
     var page;
-    print('eeeewewewewew');
     switch (routeStatus) {
       case RouteStatus.home:
         tempPages.clear();
-        page = warpPage(const HomePage());
+        page = pageWrap(BottomNavigator());
         break;
       case RouteStatus.detail:
-        page = warpPage(DetailPage());
+        page = pageWrap(DetailPage());
         break;
       case RouteStatus.login:
-        page = warpPage(LoginPage());
+        page = pageWrap(LoginPage());
         break;
       case RouteStatus.registration:
-        page = warpPage(RegisterPage());
+        page = pageWrap(RegisterPage());
         break;
     }
     tempPages = [...tempPages, page];
     //通知路由栈发生改变
-    CsNavigator.getShareInstance().notify(tempPages, pages);
+    HiNavigator.getInstance().notify(tempPages, pages);
 
     pages = tempPages;
 
@@ -129,7 +130,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
           }
           var tempPages = [...pages];
           pages.removeLast();
-          CsNavigator.getShareInstance().notify(pages, tempPages);
+          HiNavigator.getInstance().notify(pages, tempPages);
           return true;
         },
       ),
@@ -138,7 +139,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   RouteStatus get routeStatus {
     if (_routeStatus != RouteStatus.registration && !hasLogin) {
-      return _routeStatus = RouteStatus.login;
+      return _routeStatus = RouteStatus.registration;
     } else if (model != null) {
       return _routeStatus = RouteStatus.detail;
     } else {
