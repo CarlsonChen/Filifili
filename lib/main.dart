@@ -12,6 +12,9 @@ import 'package:bilibili/page/login_page.dart';
 import 'package:bilibili/page/register_page.dart';
 import 'package:flutter/material.dart';
 
+import 'http/core/hi_error.dart';
+import 'http/core/hi_net.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -59,14 +62,14 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     }));
 
     //设置网络错误拦截器
-    // HiNet.getInstance().setErrorInterceptor((error) {
-    //   if (error is NeedLogin) {
-    //     //清空失效的登录令牌
-    //     HiCache.getInstance().remove(LoginDao.BOARDING_PASS);
-    //     //拉起登录
-    //     HiNavigator.getInstance().onJumpTo(RouteStatus.login);
-    //   }
-    // });
+    HiNet.getInstance().setErrorInterceptor((error) {
+      if (error is NeedLogin) {
+        //清空失效的登录令牌
+        HiCache.getInstance().remove(LoginDao.BOARDING_PASS);
+        //拉起登录
+        HiNavigator.getInstance().onJumpTo(RouteStatus.login);
+      }
+    });
   }
 
   RouteStatus _routeStatus = RouteStatus.home;
