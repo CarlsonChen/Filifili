@@ -69,7 +69,7 @@ class CsNavigator extends _RouteJumpListener {
   CsNavigator._();
 
   static CsNavigator getShareInstance() {
-    return _shareInstance ?? CsNavigator._();
+    return _shareInstance ??= CsNavigator._();
   }
 
   RouteJumpListener? _routeJump;

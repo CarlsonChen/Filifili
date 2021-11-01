@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
     }
     try {
       var result =
-          await LoginDao.register(userName!, password!, orderId!, imoocId!);
+          await LoginDao.registration(userName!, password!, orderId!, imoocId!);
       showToast(result['msg']);
       HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
     } on HiNetError catch (e) {

@@ -1,3 +1,5 @@
+import 'package:bilibili/http/dao/login_dao.dart';
+
 enum HttpMethod { GET, POST, DELETE }
 
 ///基础请求
@@ -32,6 +34,10 @@ abstract class BaseRequest {
     } else {
       uri = Uri.http(authority(), pathStr, params);
     }
+    if (needLogin()) {
+      //给需要登录的接口携带登录令牌
+      addHeader(LoginDao.BOARDING_PASS, LoginDao.getBoardingPass());
+    }
     print('url:${uri.toString()}');
     return uri.toString();
   }
@@ -47,9 +53,8 @@ abstract class BaseRequest {
   }
 
   Map<String, dynamic> header = {
-    "course-flag":"fa",
-    "auth-token":"ZmEtMjAyMS0wNC0xMiAyMToyMjoyMC1mYQ==fa",
-
+    "course-flag": "fa",
+    "auth-token": "ZmEtMjAyMS0wNC0xMiAyMToyMjoyMC1mYQ==fa",
   };
 
   ///添加header

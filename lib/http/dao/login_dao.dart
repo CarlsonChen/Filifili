@@ -5,32 +5,35 @@ import 'package:bilibili/http/request/login_request.dart';
 import 'package:bilibili/http/request/regist_request.dart';
 
 class LoginDao {
-  static const BOARDING_PASS = "BOARDING_PASS";
+  static const BOARDING_PASS = "boarding-pass";
 
   static login(String userName, String password) {
     return _send(userName, password);
   }
 
-  static register(
-      String userName, String password, String orderId, String imoocId) {
-    return _send(userName, password, orderID: orderId, imoocId: imoocId);
+  static registration(
+      String userName, String password, String imoocId, String orderId) {
+    return _send(userName, password, imoocId: imoocId, orderId: orderId);
   }
 
-  static _send(String uerName, String password,
-      {String? orderID, String? imoocId}) async {
+  static _send(String userName, String password,
+      {String? imoocId, String? orderId}) async {
     BaseRequest request;
-    if (orderID == null && imoocId == null) {
-      request = LoginRequest();
-    } else {
+    if (imoocId != null && orderId != null) {
       request = RegistRequest();
+    } else {
+      request = LoginRequest();
     }
     request
-        .add('userName', uerName)
-        .add('password', password)
-        .add('orderId', orderID ?? '')
-        .add('imoocId', imoocId ?? '');
+        .add("userName", userName)
+        .add("password", password)
+        .add("imoocId", imoocId ?? "")
+        .add("orderId", orderId ?? "");
     var result = await HiNet.getInstance().fire(request);
+    print(result);
     if (result['code'] == 0 && result['data'] != null) {
+      //保存登录令牌
+      print('令牌--------${result['data']}');
       HiCache.getInstance().setString(BOARDING_PASS, result['data']);
     }
     return result;
