@@ -15,20 +15,14 @@ class _HomeTabPageState extends State<HomeTabPage> {
   void initState() {
     super.initState();
     // print
-    _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
       body: Center(
         child: Text(widget.name),
       ),
     );
-  }
-
-  Future _loadData() async {
-    var result = await HomeDao.getHomeData('推荐', 1, 10);
   }
 }
