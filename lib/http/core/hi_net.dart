@@ -16,10 +16,7 @@ class HiNet {
   static HiNet? _instance;
 
   static HiNet getInstance() {
-    if (_instance == null) {
-      _instance = HiNet._();
-    }
-    return _instance!;
+    return _instance ??= HiNet._();
   }
 
   Future fire(BaseRequest request) async {
@@ -40,7 +37,7 @@ class HiNet {
       printLog(error);
     }
     var result = response?.data;
-    printLog(result);
+    // printLog(result);
     var status = response?.statusCode;
     var hiError;
     switch (status) {

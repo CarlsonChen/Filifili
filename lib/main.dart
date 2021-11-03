@@ -2,6 +2,7 @@ import 'package:bilibili/Util/color.dart';
 import 'package:bilibili/Util/toast.dart';
 import 'package:bilibili/db/hi_cache.dart';
 import 'package:bilibili/http/dao/login_dao.dart';
+import 'package:bilibili/model/home_tab_mo.dart';
 import 'package:bilibili/model/video_model.dart';
 import 'package:bilibili/navigator/bottom_navigator.dart';
 // import 'package:bilibili/navigator/cs_navigator.dart';
@@ -55,9 +56,9 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     HiNavigator.getInstance().registerRouteJump(
         RouteJumpListener(onJumpTo: (RouteStatus routeStatus, {Map? args}) {
       _routeStatus = routeStatus;
-      // if (routeStatus == RouteStatus.detail) {
-      // this.videoModel = args!['videoMo'];
-      // }
+      if (routeStatus == RouteStatus.detail) {
+        model = args!['VideoMo'];
+      }
       notifyListeners();
     }));
 
@@ -74,7 +75,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   RouteStatus _routeStatus = RouteStatus.home;
   List<MaterialPage> pages = [];
-  VideoModel? model;
+  VideoMo? model;
 
   // BiliRoutePath? path;
 
@@ -82,6 +83,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   Widget build(BuildContext context) {
     int index = getPageIndex(pages, routeStatus);
     List<MaterialPage> tempPages = pages;
+
     //如果在栈中,则清除这个页面和上面所有页面，重新添加此页面到栈顶
     if (index != -1) {
       //要打开的页面在栈中已存在，则将该页面和它上面的所有页面进行出栈
@@ -90,13 +92,16 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
       tempPages = tempPages.sublist(0, index);
     }
     var page;
+
     switch (routeStatus) {
       case RouteStatus.home:
         tempPages.clear();
         page = pageWrap(BottomNavigator());
         break;
       case RouteStatus.detail:
-        page = pageWrap(DetailPage());
+        page = pageWrap(DetailPage(
+          video: model,
+        ));
         break;
       case RouteStatus.login:
         page = pageWrap(LoginPage());
@@ -106,6 +111,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
         break;
     }
     tempPages = [...tempPages, page];
+
     //通知路由栈发生改变
     HiNavigator.getInstance().notify(tempPages, pages);
 
@@ -132,7 +138,9 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
             return false;
           }
           var tempPages = [...pages];
+
           pages.removeLast();
+
           HiNavigator.getInstance().notify(pages, tempPages);
           return true;
         },
@@ -143,9 +151,11 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
   RouteStatus get routeStatus {
     if (_routeStatus != RouteStatus.registration && !hasLogin) {
       return _routeStatus = RouteStatus.registration;
-    } else if (model != null) {
-      return _routeStatus = RouteStatus.detail;
-    } else {
+    }
+    // else if (model != null) {
+    //   return _routeStatus = RouteStatus.detail;
+    // }
+    else {
       return _routeStatus;
     }
   }

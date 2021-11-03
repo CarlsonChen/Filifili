@@ -20,16 +20,18 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   var _currentIndex = 0;
   bool _hasBuild = false;
   static int _initialPage = 0;
-  final List<Widget> _pages = [
-    HomePage(),
-    RankingPage(),
-    FavoritePage(),
-    MinePage(),
-  ];
+  late List<Widget> _pages;
   final PageController _controller = PageController(initialPage: _initialPage);
 
   @override
   Widget build(BuildContext context) {
+    _pages = [
+      HomePage(onJumpTo: (index) => _onJumpTo(index)),
+      RankingPage(),
+      FavoritePage(),
+      MinePage(),
+    ];
+
     if (!_hasBuild) {
       HiNavigator.getInstance()
           .onBottomTabChange(_initialPage, _pages[_initialPage]);
@@ -69,7 +71,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     );
   }
 
-  void _onJumpTo(int index, {pageChange = false}) {
+  _onJumpTo(int index, {pageChange = false}) {
     if (!pageChange) {
       //让PageView展示对应tab
       _controller.jumpToPage(index);

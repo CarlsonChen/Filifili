@@ -1,24 +1,31 @@
 import 'package:bilibili/Util/color.dart';
+import 'package:bilibili/Util/measure.dart';
 import 'package:bilibili/Util/toast.dart';
+import 'package:bilibili/core/cs_state.dart';
 import 'package:bilibili/http/core/hi_error.dart';
 import 'package:bilibili/http/dao/home_dao.dart';
 import 'package:bilibili/model/home_tab_mo.dart';
 import 'package:bilibili/navigator/hi_navigator.dart';
 import 'package:bilibili/page/home_tab_page.dart';
+import 'package:bilibili/wiget/navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:underline_indicator/underline_indicator.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final ValueChanged<int>? onJumpTo;
+
+  const HomePage({Key? key, this.onJumpTo}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HomePageState extends CsState<HomePage>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   var listener;
+
   @override
   void initState() {
     super.initState();
@@ -42,22 +49,29 @@ class _HomePageState extends State<HomePage>
   }
 
   late TabController _tabController;
+
   // var tabs = ["推荐", "热门", "追播", "影视", "搞笑", "日常", "综合", "手机游戏", "短片·手书·配音"];
   List<BannerMo> bannerList = [];
   List<CategoryMo> categoryList = [];
+
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(
+        BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width,
+            maxHeight: MediaQuery.of(context).size.height),
+        designSize: disignSize,
+        orientation: Orientation.portrait);
     return Scaffold(
       body: Container(
           child: Column(
         children: [
-          Container(
+          NavigationBar(
             color: mainWhite,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: _tabbarWidget(),
-            ),
+            mode: BrightMode.LIGHTMODE,
+            child: _navigatorContainer(),
           ),
+          _tabbarWidget(),
           const SizedBox(
             height: 5,
           ),
@@ -85,7 +99,10 @@ class _HomePageState extends State<HomePage>
 
   _tabPage(List<CategoryMo> tabs) {
     return tabs.map((model) {
-      return HomeTabPage(name: model.name);
+      return HomeTabPage(
+        catagoryName: model.name,
+        bannerList: model.name == '推荐' ? bannerList : null,
+      );
     }).toList();
   }
 
@@ -119,5 +136,71 @@ class _HomePageState extends State<HomePage>
     } on HiNetError catch (e) {
       showWarningToast(e.message);
     }
+  }
+
+  _navigatorContainer() {
+    double margin = 15.w;
+    return Padding(
+      padding: EdgeInsets.only(left: 15.w, right: margin),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () {
+              if (widget.onJumpTo != null) {
+                widget.onJumpTo!(3);
+              }
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: const Image(
+                image: AssetImage('images/avatar.png'),
+                width: 40,
+                height: 40,
+              ),
+            ),
+          ),
+          Expanded(
+            child: _searchBar(),
+          ),
+          const Icon(
+            Icons.explore_outlined,
+            color: Colors.grey,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: margin),
+            child: const Icon(
+              Icons.mail_outline,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _searchBar() {
+    double margin = 15.w;
+
+    return InkWell(
+      onTap: () {
+        print('搜索点击');
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: margin, right: margin),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            height: 32,
+            color: Colors.grey[100],
+            padding: EdgeInsets.only(left: margin),
+            alignment: Alignment.centerLeft,
+            child: const Icon(
+              Icons.search,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
