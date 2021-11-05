@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:underline_indicator/underline_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   final ValueChanged<int>? onJumpTo;
@@ -162,9 +163,19 @@ class _HomePageState extends CsState<HomePage>
           Expanded(
             child: _searchBar(),
           ),
-          const Icon(
-            Icons.explore_outlined,
-            color: Colors.grey,
+          InkWell(
+            onTap: () async {
+              const url = 'http://flutter.cn';
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                throw 'Could not launch $url';
+              }
+            },
+            child: const Icon(
+              Icons.explore_outlined,
+              color: Colors.grey,
+            ),
           ),
           Padding(
             padding: EdgeInsets.only(left: margin),
