@@ -1,12 +1,15 @@
 import 'package:bilibili/Util/color.dart';
 import 'package:bilibili/Util/measure.dart';
 import 'package:bilibili/Util/toast.dart';
+import 'package:bilibili/Util/view_util.dart';
 import 'package:bilibili/core/cs_state.dart';
 import 'package:bilibili/http/core/hi_error.dart';
 import 'package:bilibili/http/dao/home_dao.dart';
 import 'package:bilibili/model/home_tab_mo.dart';
 import 'package:bilibili/navigator/hi_navigator.dart';
+import 'package:bilibili/page/detail_page.dart';
 import 'package:bilibili/page/home_tab_page.dart';
+import 'package:bilibili/page/mine_page.dart';
 import 'package:bilibili/wiget/navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,13 +33,19 @@ class _HomePageState extends CsState<HomePage>
   @override
   void initState() {
     super.initState();
+    statusStyle = StatusStyle.DARK_CONTENT;
+
     _tabController = TabController(length: categoryList.length, vsync: this);
     HiNavigator.getInstance().addListener(this.listener = (current, pre) {
-      print('几次');
       if (widget == current.page || current.page is HomePage) {
         print('打开了首页:onResume');
       } else if (widget == pre?.page || pre?.page is HomePage) {
         print('首页:onPause');
+      }
+      //当页面返回到首页恢复首页的状态栏样式
+      if (pre?.page is DetailPage && current.page is! MinePage) {
+        statusStyle = StatusStyle.DARK_CONTENT;
+        changeStatusBar(color: Colors.white, statusStyle: statusStyle);
       }
     });
 
@@ -63,13 +72,14 @@ class _HomePageState extends CsState<HomePage>
             maxHeight: MediaQuery.of(context).size.height),
         designSize: disignSize,
         orientation: Orientation.portrait);
+    super.build(context);
     return Scaffold(
       body: Container(
           child: Column(
         children: [
           NavigationBar(
             color: mainWhite,
-            mode: BrightMode.LIGHTMODE,
+            statusStyle: statusStyle,
             child: _navigatorContainer(),
           ),
           _tabbarWidget(),

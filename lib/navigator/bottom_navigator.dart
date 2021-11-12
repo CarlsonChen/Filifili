@@ -1,4 +1,5 @@
 import 'package:bilibili/Util/color.dart';
+import 'package:bilibili/Util/log_utils.dart';
 import 'package:bilibili/navigator/hi_navigator.dart';
 import 'package:bilibili/page/favorite_page.dart';
 import 'package:bilibili/page/home_page.dart';
@@ -20,18 +21,18 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   var _currentIndex = 0;
   bool _hasBuild = false;
   static int _initialPage = 0;
-  late List<Widget> _pages;
-  final PageController _controller = PageController(initialPage: _initialPage);
-
-  @override
-  Widget build(BuildContext context) {
-    _pages = [
-      HomePage(onJumpTo: (index) => _onJumpTo(index)),
+  List<Widget> get _pages {
+    return [
+      HomePage(onJumpTo: (index) => _onJumpTo(index, pageChange: true)),
       RankingPage(),
       FavoritePage(),
       MinePage(),
     ];
+  }
 
+  final PageController _controller = PageController(initialPage: _initialPage);
+  @override
+  Widget build(BuildContext context) {
     if (!_hasBuild) {
       HiNavigator.getInstance()
           .onBottomTabChange(_initialPage, _pages[_initialPage]);
@@ -49,7 +50,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
           setupItem('收藏', Icons.favorite),
           setupItem('我的', Icons.live_tv),
         ],
-        onTap: (index) => _onJumpTo(index),
+        onTap: (index) => _onJumpTo(index, pageChange: index != _currentIndex),
       ),
       body: PageView(
         controller: _controller,
@@ -72,13 +73,12 @@ class _BottomNavigatorState extends State<BottomNavigator> {
   }
 
   _onJumpTo(int index, {pageChange = false}) {
-    if (!pageChange) {
-      //让PageView展示对应tab
-      _controller.jumpToPage(index);
-    }
-    // else {
+    if (_currentIndex == index) return;
+
+    _controller.jumpToPage(index);
+
     HiNavigator.getInstance().onBottomTabChange(index, _pages[index]);
-    // }
+
     setState(() {
       //控制选中第一个tab
       _currentIndex = index;

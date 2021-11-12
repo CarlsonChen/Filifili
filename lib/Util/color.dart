@@ -1,6 +1,9 @@
+import 'package:bilibili/Util/view_util.dart';
 import 'package:flutter/material.dart';
+
 //主题色
-const MaterialColor primary = MaterialColor(0xfffb7299, <int,Color>{50:Color(0xffff9db5)} );
+const MaterialColor primary =
+    MaterialColor(0xfffb7299, <int, Color>{50: Color(0xffff9db5)});
 //白色
 const MaterialColor mainWhite = MaterialColor(
   0xffffffff,
@@ -17,3 +20,5 @@ const MaterialColor mainWhite = MaterialColor(
     900: Color(0xFFFFFFFF),
   },
 );
+
+var statusStyle = StatusStyle.LIGHT_CONTENT;

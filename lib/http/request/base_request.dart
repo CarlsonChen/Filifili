@@ -1,3 +1,4 @@
+import 'package:bilibili/Util/log_utils.dart';
 import 'package:bilibili/http/dao/login_dao.dart';
 
 enum HttpMethod { GET, POST, DELETE }
@@ -38,7 +39,8 @@ abstract class BaseRequest {
       //给需要登录的接口携带登录令牌
       addHeader(LoginDao.BOARDING_PASS, LoginDao.getBoardingPass());
     }
-    print('url:${uri.toString()}');
+    // print('url:${uri.toString()}');
+    LogUtils.d(uri.toString());
     return uri.toString();
   }
 

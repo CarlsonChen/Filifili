@@ -16,8 +16,8 @@ class VideoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        HiNavigator.getInstance().onJumpTo(RouteStatus.detail,
-            args: {"VideoMo": VideoMo(vid: model.vid)});
+        HiNavigator.getInstance()
+            .onJumpTo(RouteStatus.detail, args: {"VideoMo": model});
       },
       child: Card(
         margin: EdgeInsets.zero,
@@ -41,7 +41,7 @@ class VideoCard extends StatelessWidget {
   _topImage() {
     return Stack(
       children: [
-        cacheWebImage(
+        cachedWebImage(
           model.cover,
           width: (screenWidth - 16 - 8) * 0.5,
           height: 120,
@@ -102,7 +102,7 @@ class VideoCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: cacheWebImage(model.owner!.face, width: 24, height: 24),
+          child: cachedWebImage(model.owner!.face, width: 24, height: 24),
         ),
         const SizedBox(
           width: 8,
